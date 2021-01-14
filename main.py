@@ -13,6 +13,7 @@ def get_prefix(ctx, message: discord.Message):
 
     return prefixes[str(message.guild.id)]
 
+
 # Defining bot object
 
 bot = commands.Bot(command_prefix=get_prefix)

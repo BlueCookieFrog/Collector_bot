@@ -4,7 +4,7 @@ import json
 
 
 class Prefixes(commands.Cog):
-    def __init__(self, bot :discord):
+    def __init__(self, bot: discord):
         self.bot = bot
 
     @commands.Cog.listener()
@@ -62,5 +62,3 @@ class Prefixes(commands.Cog):
 
 def setup(bot):
     bot.add_cog(Prefixes(bot))
-
-
