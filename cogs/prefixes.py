@@ -46,9 +46,8 @@ class Prefixes(commands.Cog):
 
         Parameters
         ----------
-        ctx : discord.Context
 
-        pref : string
+        pref (string) :
             String with prefered prefix
         """
         with open("./config/prefixes.json", "r") as f:

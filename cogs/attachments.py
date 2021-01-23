@@ -58,7 +58,7 @@ class Attachments(commands.Cog):
                         channel = message.channel
                         await channel.send("Unexpected error", delete_after=10)
 
-                if str(message.channel) == "kolokwium-02-12":
+                if str(message.channel) == "zbiorczy":
                     await message.add_reaction(emoji="🇦")
                     await message.add_reaction(emoji="🇧")
                     await message.add_reaction(emoji="🇨")
@@ -84,7 +84,7 @@ class Attachments(commands.Cog):
                                     now = dt.now()
                                     dt_string = now.strftime("%d%m%Y%H%M%S%f")
                                     f = await aiofiles.open(
-                                        f"files/Brzeski/{name}_{dt_string}{file_format}",
+                                        f"files/Air2k18/{name}_{dt_string}{file_format}",
                                         mode="wb",
                                     )
                                     await f.write(await resp.read())
@@ -107,3 +107,4 @@ class Attachments(commands.Cog):
 
 def setup(bot):
     bot.add_cog(Attachments(bot))
+
