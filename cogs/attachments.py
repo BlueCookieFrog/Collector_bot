@@ -16,83 +16,85 @@ class Attachments(commands.Cog):
         # print(message.channel.id)
 
         """
-        Part that, as for now, downloads file that is attached to message and saves it in /files directory
+        Part that, for now, downloads file that is attached to message and saves it in /files directory
 
         TODO:
         - GDrive integration
         """
         att = len(message.attachments)
         if att > 0:
-            for x in range(att):
+            try:
+                # try to open file and load it
+                with open("config/exams.json", "r") as f:
+                    data = json.load(f)
+                for x in range(att):
+                    try:
+                        if str(message.channel.id) in data[str(message.guild.id)]:
 
-                    if str(message.channel) == "na-puste-pytania":
-                        await message.add_reaction(emoji="✔️")
-                        await message.add_reaction(emoji="❌")
-                        await message.add_reaction(emoji="⏭️")
+                            for emoji in data[str(message.guild.id)][
+                                str(message.channel.id)
+                            ]["reactions"]:
+                                await message.add_reaction(emoji)
 
-                        try:
-                            async with aiohttp.ClientSession() as session:
+                            try:
+                                async with aiohttp.ClientSession() as session:
 
-                                # file url
-                                url = message.attachments[x].url
+                                    # file url
+                                    url = message.attachments[x].url
 
-                                # file name
-                                name = message.attachments[x].filename[:-4]
+                                    # file name
+                                    name = message.attachments[x].filename[:-4]
 
-                                # file format
-                                file_format = message.attachments[x].filename[-4:]
+                                    # file format
+                                    file_format = message.attachments[x].filename[-4:]
 
-                                async with session.get(url) as resp:
-                                    if resp.status == 200:
-                                        """ Adds time stamp to file name to prevent overwriting files with same name"""
-                                        now = dt.now()
-                                        dt_string = now.strftime("%d%m%Y%H%M%S%f")
-                                        f = await aiofiles.open(
-                                            f"files/Air2k18/{name}_{dt_string}{file_format}",
-                                            mode="wb",
-                                        )
-                                        await f.write(await resp.read())
-                                        await f.close()
+                                    async with session.get(url) as resp:
+                                        if resp.status == 200:
+                                            """ Adds timestamp to file name to prevent overwriting files with same name"""
+                                            now = dt.now()
+                                            dt_string = now.strftime("%d%m%Y%H%M%S%f")
 
-                        except:
-                            channel = message.channel
-                            await channel.send("Unexpected error", delete_after=10)
+                                            # create directory if it doesn't exist
+                                            directory = f"files/{str(message.guild.name)}/{str(message.channel.name)}"
+                                            if not os.path.exists(directory):
+                                                os.makedirs(directory)
 
-                    if str(message.channel) == "kolokwium-02-12":
-                        await message.add_reaction(emoji="🇦")
-                        await message.add_reaction(emoji="🇧")
-                        await message.add_reaction(emoji="🇨")
-                        await message.add_reaction(emoji="🇩")
-                        await message.add_reaction(emoji="🇪")
-                        await message.add_reaction(emoji="🇫")
+                                            async with aiofiles.open(
+                                                f"{directory}/{name}_{dt_string}{file_format}",
+                                                mode="wb",
+                                            ) as f:
+                                                await f.write(await resp.read())
 
-                        try:
-                            async with aiohttp.ClientSession() as session:
+                            except Exception as error:
+                                # logging errors without flooding terminal
+                                now = dt.now()
+                                date = now.strftime("%d.%m.%Y[%H:%M:%S]")
+                                log_id = now.strftime("%d%m%Y%H%M%S%f")
 
-                                # file url
-                                url = message.attachments[x].url
+                                try:
+                                    log = open("log.txt", "a")
+                                    # error id which is send in message
+                                    log.write(f"{log_id}:\n")
+                                    # raised exception
+                                    log.write(
+                                        f"    {date} - {error.__class__} in attachments.py, on_message, file download\n"
+                                    )
+                                    # server and channel
+                                    log.write(
+                                        f'    in server "{message.guild.name}" ({message.guild.id}) and channel "{message.channel.name}" ({message.channel.id})\n'
+                                    )
+                                except Exception as log_error:
+                                    print(
+                                        f"Occured error while logging raised exception {log_error.__class__}"
+                                    )
+                                await message.channel.send(
+                                    f"Unexpected error, error id: {log_id}"
+                                )
+                    except KeyError:
+                        pass
 
-                                # file name
-                                name = message.attachments[x].filename[:-4]
-
-                                # file format
-                                file_format = message.attachments[x].filename[-4:]
-
-                                async with session.get(url) as resp:
-                                    if resp.status == 200:
-                                        """ Adds time stamp to file name to prevent overwriting files with same name"""
-                                        now = dt.now()
-                                        dt_string = now.strftime("%d%m%Y%H%M%S%f")
-                                        f = await aiofiles.open(
-                                            f"files/Brzeski/{name}_{dt_string}{file_format}",
-                                            mode="wb",
-                                        )
-                                        await f.write(await resp.read())
-                                        await f.close()
-                        except:
-                            channel = message.channel
-                            await channel.send("Unexpected error", delete_after=10)
-
+            except IOError:
+                pass
 
         """ If message only consist of bot mention, bot will reply with current prefix """
 
