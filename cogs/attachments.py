@@ -23,81 +23,78 @@ class Attachments(commands.Cog):
         """
         att = len(message.attachments)
         if att > 0:
-            for x in range(att):
-
-                if str(message.channel) == "na-puste-pytania":
-                    # await message.add_reaction(emoji="✔️")
-                    # await message.add_reaction(emoji="❌")
-                    # await message.add_reaction(emoji="⏭️")
-                    await message.add_reaction(emoji="🇦")
-                    await message.add_reaction(emoji="🇧")
-                    await message.add_reaction(emoji="🇨")
-                    await message.add_reaction(emoji="🇩")
-                    await message.add_reaction(emoji="🇪")
-                    await message.add_reaction(emoji="🇫")
-
+            try:
+                # try to open file and load it
+                with open("config/exams.json", "r") as f:
+                    data = json.load(f)
+                for x in range(att):
                     try:
-                        async with aiohttp.ClientSession() as session:
+                        if str(message.channel.id) in data[str(message.guild.id)]:
 
-                            # file url
-                            url = message.attachments[x].url
+                            for emoji in data[str(message.guild.id)][
+                                str(message.channel.id)
+                            ]["reactions"]:
+                                await message.add_reaction(emoji)
 
-                            # file name
-                            name = message.attachments[x].filename[:-4]
+                            try:
+                                async with aiohttp.ClientSession() as session:
 
-                            # file format
-                            file_format = message.attachments[x].filename[-4:]
+                                    # file url
+                                    url = message.attachments[x].url
 
-                            async with session.get(url) as resp:
-                                if resp.status == 200:
-                                    """ Adds timestamp to file name to prevent overwriting files with same name"""
-                                    now = dt.now()
-                                    dt_string = now.strftime("%d%m%Y%H%M%S%f")
-                                    f = await aiofiles.open(
-                                        f"files/Air2k18/{name}_{dt_string}{file_format}",
-                                        mode="wb",
+                                    # file name
+                                    name = message.attachments[x].filename[:-4]
+
+                                    # file format
+                                    file_format = message.attachments[x].filename[-4:]
+
+                                    async with session.get(url) as resp:
+                                        if resp.status == 200:
+                                            """ Adds timestamp to file name to prevent overwriting files with same name"""
+                                            now = dt.now()
+                                            dt_string = now.strftime("%d%m%Y%H%M%S%f")
+
+                                            # create directory if it doesn't exist
+                                            directory = f"files/{str(message.guild.name)}/{str(message.channel.name)}"
+                                            if not os.path.exists(directory):
+                                                os.makedirs(directory)
+
+                                            async with aiofiles.open(
+                                                f"{directory}/{name}_{dt_string}{file_format}",
+                                                mode="wb",
+                                            ) as f:
+                                                await f.write(await resp.read())
+
+                            except Exception as error:
+                                # logging errors without flooding terminal
+                                now = dt.now()
+                                date = now.strftime("%d.%m.%Y[%H:%M:%S]")
+                                log_id = now.strftime("%d%m%Y%H%M%S%f")
+
+                                try:
+                                    log = open("log.txt", "a")
+                                    # error id which is send in message
+                                    log.write(f"{log_id}:\n")
+                                    # raised exception
+                                    log.write(
+                                        f"    {date} - {error.__class__} in attachments.py, on_message, file download\n"
                                     )
-                                    await f.write(await resp.read())
-                                    await f.close()
-
-                    except:
-                        channel = message.channel
-                        await channel.send("Unexpected error", delete_after=10)
-
-                if str(message.channel) == "ochrona":
-                    await message.add_reaction(emoji="🇦")
-                    await message.add_reaction(emoji="🇧")
-                    await message.add_reaction(emoji="🇨")
-                    await message.add_reaction(emoji="🇩")
-                    await message.add_reaction(emoji="🇪")
-                    await message.add_reaction(emoji="🇫")
-
-                    try:
-                        async with aiohttp.ClientSession() as session:
-
-                            # file url
-                            url = message.attachments[x].url
-
-                            # file name
-                            name = message.attachments[x].filename[:-4]
-
-                            # file format
-                            file_format = message.attachments[x].filename[-4:]
-
-                            async with session.get(url) as resp:
-                                if resp.status == 200:
-                                    """ Adds timestamp to file name to prevent overwriting files with same name"""
-                                    now = dt.now()
-                                    dt_string = now.strftime("%d%m%Y%H%M%S%f")
-                                    f = await aiofiles.open(
-                                        f"files/Brzeski/{name}_{dt_string}{file_format}",
-                                        mode="wb",
+                                    # server and channel
+                                    log.write(
+                                        f'    in server "{message.guild.name}" ({message.guild.id}) and channel "{message.channel.name}" ({message.channel.id})\n'
                                     )
-                                    await f.write(await resp.read())
-                                    await f.close()
-                    except:
-                        channel = message.channel
-                        await channel.send("Unexpected error", delete_after=10)
+                                except Exception as log_error:
+                                    print(
+                                        f"Occured error while logging raised exception {log_error.__class__}"
+                                    )
+                                await message.channel.send(
+                                    f"Unexpected error, error id: {log_id}"
+                                )
+                    except KeyError:
+                        pass
+
+            except IOError:
+                pass
 
         """ If message only consist of bot mention, bot will reply with current prefix """
 
