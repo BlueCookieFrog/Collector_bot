@@ -16,6 +16,7 @@ def get_prefix(ctx, message: discord.Message):
         fix_missing_key(message.guild)
         return "."
 
+
 # Defining bot object
 
 bot = commands.Bot(command_prefix=get_prefix)
