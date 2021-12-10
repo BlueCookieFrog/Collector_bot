@@ -47,6 +47,15 @@ def read_token():
         print("No token file was found")
         sys.exit()
 
+def create_needed_dir():
+    try:
+        os.mkdir("files")
+    except OSError as error:
+        print(error)
+    try:
+        os.mkdir("config")
+    except OSError as error:
+        print(error)
 
 @bot.event
 async def on_ready():
@@ -84,6 +93,7 @@ async def reload(ctx, extension):
 
 
 # execution part
+create_needed_dir()
 
 for filename in os.listdir("./cogs"):
     if filename.endswith(".py"):
