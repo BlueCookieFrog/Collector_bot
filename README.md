@@ -1,7 +1,7 @@
 ## How to run
 
 ### 1. You need `python3`
-So... instal `python3` if you haven't. :)
+So... install `python3` if you haven't. 🙃
 
 ### 2. You need all requires package
 So... Run:
@@ -20,21 +20,32 @@ The generated token save in `token.txt` file in the root directory (next to `mai
 
 For example by:
 ```sh
-python3 main.py`
+python3 main.py
 ```
 
 ### 5. Invite and tag bot on your server
-It's also descripted [here: writebots.com](https://www.writebots.com/discord-bot-token/).
+It's also described [here: writebots.com](https://www.writebots.com/discord-bot-token/).
+
+### 6. The help
+To get the help message send by discord:
+```
+.help
+```
+or
+```
+.help <name of command>
+```
+(`.` is the default bot prefix)
 
 Good luck!
 
 ## Bonus for Linux users
-One of the way to run bot in the background of OS.
+One of the way to run bot in the background of the OS.
 (It's written by Ubuntu 20.04 user.)
 
-1. Clone repo in to `/var` directory.
+1. Clone the repo in to `/var` directory.
 2. Create `www` user with correct permissions to read and execute existing files and create files in `files` and `config` directories.
-3. Create service config file `/etc/systemd/system/discordbot.service`, with that content:
+3. Create a service config file `/etc/systemd/system/discordbot.service`, with that content:
 
 ```
 [Unit]
@@ -62,7 +73,7 @@ sudo systemctl start discordbot.service
 sudo systemctl status discordbot.service
 ```
 
-5. And if you want to stop bot:
+5. And if you want to stop the bot:
 ```sh
 sudo systemctl stop discordbot.service
 ```
