@@ -39,6 +39,13 @@ or
 
 Good luck!
 
+### Snippet for running default exam
+
+```
+.test :regional_indicator_a: :regional_indicator_b: :regional_indicator_c: :regional_indicator_d: :regional_indicator_e: :regional_indicator_f:
+```
+
+
 ## Bonus for Linux users
 One of the way to run bot in the background of the OS.
 (It's written by Ubuntu 20.04 user.)
